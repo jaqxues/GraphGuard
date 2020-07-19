@@ -23,14 +23,14 @@ class StringMatcher(Matcher):
 
                 # Loop through each method and find methods in this class
                 for m_dec in self.m_decs:
-                    r_m = self.decs_ma[m_dec]
-                    if r_m.class_name != c_ref.name:
+                    ma = self.decs_ma[m_dec]
+                    if ma.class_name != c_ref.name:
                         continue
 
                     # String is used in a class we need to find
                     c_strs[c_ref.name].append(s.value)
 
-                    if m_ref == r_m:
+                    if m_ref == ma:
                         # String is used in this method
                         m_strs[m_dec].append(s.value)
 
@@ -48,9 +48,10 @@ class StringMatcher(Matcher):
             if s.value not in to_find:
                 continue
 
-            for m_dec, m_counter in m_strs.items():
-                c_name = FormatClassToJava(m_dec.class_name)
+            for m_dec in self.m_decs:
+                m_counter = m_strs[m_dec] if m_dec in m_strs else Counter()
 
+                c_name = FormatClassToJava(m_dec.class_name)
                 c_counter = c_strs[c_name] if c_name in c_strs else Counter()
 
                 if s.value in m_counter:
