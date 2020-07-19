@@ -18,7 +18,7 @@ class Accumulator:
         self.matching_cs = {}
         self.matching_ms = {}
 
-    def add_candidates(self, candidates_cs, candidates_ms):
+    def add_candidates(self, candidates_cs=None, candidates_ms=None):
         previous_cs = len(self.matching_cs)
         previous_ms = len(self.matching_ms)
 
@@ -106,3 +106,6 @@ class Accumulator:
 
     def get_unresolved_ms(self, decs_to_find):
         return tuple(filter(lambda x: x not in self.matching_ms, decs_to_find))
+
+    def get_unresolved_cs(self, decs_to_find):
+        return set(map(lambda x: FormatClassToJava(x.class_name), decs_to_find)) - set(self.matching_cs.keys())
