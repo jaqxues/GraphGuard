@@ -104,8 +104,8 @@ class Accumulator:
 
         print(f"Could resolve {len(self.matching_cs) - previous_cs} new Classes, {len(self.matching_ms) - previous_ms} new Methods")
 
-    def get_unresolved_ms(self, decs_to_find):
+    def get_unmatched_ms(self, decs_to_find):
         return tuple(filter(lambda x: x not in self.matching_ms, decs_to_find))
 
-    def get_unresolved_cs(self, decs_to_find):
+    def get_unmatched_cs(self, decs_to_find):
         return set(map(lambda x: FormatClassToJava(x.class_name), decs_to_find)) - set(self.matching_cs.keys())
