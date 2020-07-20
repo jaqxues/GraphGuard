@@ -33,7 +33,7 @@ class StringMatcher(Matcher):
                         # String is used in this method
                         m_strs[m_dec].append(s.value)
 
-        c_strs = {k: Counter(v) for k, v in c_strs.items()}
+        c_strs = {str(k): Counter(v) for k, v in c_strs.items()}
         m_strs = {k: Counter(v) for k, v in m_strs.items()}
         return c_strs, m_strs
 

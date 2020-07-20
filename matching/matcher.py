@@ -50,7 +50,7 @@ class Accumulator:
                         print(".. Inner join narrowed down search.",
                               f"(({len(c_set)} | {len(previous)}) -> {len(combined)})")
 
-                    candidates_cs[c_name] = combined
+                    self.candidates_cs[c_name] = combined
                 else:
                     self.candidates_cs[c_name] = c_set
 
@@ -82,7 +82,7 @@ class Accumulator:
                         print(".. Inner join narrowed down search.",
                               f"(({len(m_set) | len(previous)}) -> {len(combined)})")
 
-                    candidates_ms[m_dec] = combined
+                    self.candidates_ms[m_dec] = combined
                 else:
                     self.candidates_ms[m_dec] = m_set
 

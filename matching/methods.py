@@ -33,7 +33,7 @@ class MethodMatcher(Matcher):
             m_match_points = {}
 
             for ma2 in self.dx2.get_class_analysis(c_name2).get_methods():
-                x = sum((c_fun(ma1) == c_fun(ma2) * score for c_fun, score in cfs))
+                x = sum(((c_fun(ma1) == c_fun(ma2)) * score for c_fun, score in cfs))
                 if x >= min_points:
                     m_match_points[ma2] = x
 
