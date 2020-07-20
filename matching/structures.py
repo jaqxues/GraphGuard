@@ -26,7 +26,7 @@ class StructureMatcher(Matcher):
                     if cr(ca) != cr(ca2):
                         break
                 else:
-                    candidates[c].add(ca2.name)
+                    candidates[c].add(str(ca2.name))
 
         return candidates
 
