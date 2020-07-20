@@ -39,7 +39,10 @@ def pretty_format_class(class_name):
 
 
 def get_pretty_params(descriptor):
-    return map(pretty_format_class, strip_return_descriptor(descriptor).split(" "))
+    sr = strip_return_descriptor(descriptor)
+    if sr:
+        return map(pretty_format_class, sr.split(" "))
+    return []
 
 
 def get_method_repr(class_name, method_name, param_types):
