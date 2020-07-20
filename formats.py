@@ -1,6 +1,6 @@
-from androguard.core.bytecode import FormatClassToJava
-
 import unittest
+
+from androguard.core.bytecode import FormatClassToJava
 
 # https://source.android.com/devices/tech/dalvik/dex-format#typedescriptor
 type_descriptors = {
@@ -49,6 +49,20 @@ def get_method_repr(class_name, method_name, param_types):
 def pretty_format_ma(ma):
     return get_method_repr(pretty_format_class(ma.class_name), ma.name,
                            ", ".join(get_pretty_params(str(ma.descriptor))))
+
+
+def get_usable_description(ma):
+    stripped, r = str(ma.descriptor[1:]).split(")")
+    return "(" + (" ".join(map(get_usable, stripped.split(" "))) if stripped else "") + ")" + get_usable(r)
+
+
+def get_usable(class_name):
+    if class_name.startswith("["):
+        return "[" + get_usable(class_name[1:])
+
+    if class_name.startswith("Ljava/") or class_name.startswith("Landroid/") or class_name in type_descriptors.values():
+        return class_name
+    return "obfuscated.class"
 
 
 tests_1 = (

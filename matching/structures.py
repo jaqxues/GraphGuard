@@ -1,8 +1,8 @@
-from androguard.core.analysis.analysis import FieldAnalysis, ClassAnalysis
-
 from collections import Counter, defaultdict
 
-from formats import type_descriptors
+from androguard.core.analysis.analysis import FieldAnalysis, ClassAnalysis
+
+from formats import get_usable, get_usable_description
 from matching.matcher import Matcher
 
 
@@ -31,15 +31,6 @@ class StructureMatcher(Matcher):
         return candidates
 
 
-def get_usable(class_name):
-    if class_name.startswith("["):
-        return "[" + get_usable(class_name[1:])
-
-    if class_name.startswith("Ljava/") or class_name.startswith("Landroid/") or class_name in type_descriptors.values():
-        return class_name
-    return "obfuscated.class"
-
-
 def get_field_counter(ca):
     li = []
     for f in map(FieldAnalysis.get_field, ca.get_fields()):
@@ -48,11 +39,6 @@ def get_field_counter(ca):
 
         li.append(get_usable(str(f.get_descriptor())))
     return Counter(li)
-
-
-def get_usable_description(ma):
-    stripped, r = str(ma.descriptor[1:]).split(")")
-    return "(" + (" ".join(map(get_usable, stripped.split(" "))) if stripped else "") + ")" + get_usable(r)
 
 
 def get_method_set(ca):

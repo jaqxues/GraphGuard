@@ -9,9 +9,6 @@ UNIQUE_STRINGS_MAJORITY = 2 / 3
 
 
 class StringMatcher(Matcher):
-    def __init__(self, *args):
-        super().__init__(*args)
-
     def get_counters(self):
         c_strs, m_strs = defaultdict(list), defaultdict(list)
 
