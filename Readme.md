@@ -5,7 +5,7 @@ GraphGuard is a tool originally created to update Hooks for Xposed Modules. It t
 
 Androguard requires a lot of RAM and compute, and since we need both analyzed APKs in memory to work with them, this program is quite resource-intentsive. `htop` reports a 13gb RAM usage, though your mileage may vary.
 
-Since this is so resource-intensive, all of it is packed into the Jupyter Notebook. This makes it much more usable and interactive for the person working on it.
+Since this is so resource-intensive, all of it is packed into the [Jupyter Notebook](GraphGuard.ipynb). This makes it much more usable and interactive for the person working on it.
 
 # Run it
 * To run the notebook - Install Jupyter notebook (`pip install notebook`)
