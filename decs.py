@@ -39,11 +39,10 @@ class MethodDec:
         raise Exception(f"Unresolved MethodDec: {self.pretty_format()}")
 
 
-def resolve_classes(dx, m_decs):
+def resolve_classes(dx, c_decs):
     # Key:   TypeDescriptor Representation of class
     # Value: Androguard Class Analysis Object
-    return {cname: dx.get_class_analysis(cname) for cname in map(lambda dec: FormatClassToJava(dec.class_name), m_decs)}
-
+    return {cname: dx.get_class_analysis(cname) for cname in map(FormatClassToJava, c_decs)}
 
 def resolve_methods(m_decs, cas):
     # List of MethodAnalysis Objects
