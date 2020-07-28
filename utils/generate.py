@@ -1,9 +1,9 @@
-from formats import pretty_format_class, get_pretty_params
+from utils.formats import pretty_format_class, get_pretty_params
 
 
 def generate_decs(decs, matching_ms):
     last = len(decs) - 1
-    print("decs_to_find = (")
+    print("m_decs = (")
     for idx, m_dec in enumerate(decs):
         if m_dec in matching_ms:
             ma = matching_ms[m_dec]

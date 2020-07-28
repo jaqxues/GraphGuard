@@ -2,13 +2,13 @@ from collections import defaultdict, Counter
 
 from androguard.core.bytecode import FormatClassToJava
 
-from matching.matcher import Matcher
+from core.strategy import Strategy
 
 MAX_USAGE_COUNT_STR = 20
 UNIQUE_STRINGS_MAJORITY = 2 / 3
 
 
-class StringMatcher(Matcher):
+class StringStrategy(Strategy):
     def get_counters(self):
         c_strs, m_strs = defaultdict(list), defaultdict(list)
 
@@ -16,13 +16,13 @@ class StringMatcher(Matcher):
             for x in xrefs:
                 c_ref, m_ref = x
 
-                if c_ref.name not in self.resolved_classes:
+                if c_ref.name not in self.r_cas:
                     # XReference not in a Class or method that we need to find
                     continue
 
                 # Loop through each method and find methods in this class
                 for m_dec in self.m_decs:
-                    ma = self.decs_ma[m_dec]
+                    ma = self.r_mas[m_dec]
                     if ma.class_name != c_ref.name:
                         continue
 

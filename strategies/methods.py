@@ -1,8 +1,8 @@
 from androguard.core.analysis.analysis import MethodAnalysis
 from androguard.core.bytecode import FormatClassToJava
 
-from formats import get_usable_description
-from matching.matcher import Matcher
+from utils.formats import get_usable_description
+from core.strategy import Strategy
 
 MIN_MATCH_POINTS = 2
 
@@ -16,7 +16,7 @@ cfs = (
 total_score = sum((score for _, score in cfs))
 
 
-class MethodMatcher(Matcher):
+class MethodStrategy(Strategy):
     def try_resolve_ms(self, unmatched_cs, matching_cs, exact):
         min_points = total_score if exact else MIN_MATCH_POINTS
 

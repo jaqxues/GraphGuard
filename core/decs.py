@@ -1,6 +1,6 @@
 from androguard.core.bytecode import FormatClassToJava
 
-from formats import strip_return_descriptor, get_as_type_descriptor, get_method_repr
+from utils.formats import strip_return_descriptor, get_as_type_descriptor, get_method_repr
 
 
 class MethodDec:
@@ -44,6 +44,7 @@ def resolve_classes(dx, c_decs):
     # Value: Androguard Class Analysis Object
     return {cname: dx.get_class_analysis(cname) for cname in map(FormatClassToJava, c_decs)}
 
+
 def resolve_methods(m_decs, cas):
-    # List of MethodAnalysis Objects
-    return tuple((m.find_ma(cas) for m in m_decs))
+    # Dict MethodDec - MethodAnalysis
+    return {m: m.find_ma(cas) for m in m_decs}

@@ -2,11 +2,11 @@ from collections import Counter, defaultdict
 
 from androguard.core.analysis.analysis import FieldAnalysis, ClassAnalysis
 
-from formats import get_usable, get_usable_description
-from matching.matcher import Matcher
+from utils.formats import get_usable, get_usable_description
+from core.strategy import Strategy
 
 
-class StructureMatcher(Matcher):
+class StructureStrategy(Strategy):
     def get_exact_structure_matches(self, unmatched_cs):
         candidates = defaultdict(set)
         criteria = [
