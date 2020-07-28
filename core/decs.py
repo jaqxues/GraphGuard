@@ -47,7 +47,7 @@ class FieldDec:
     def pretty_format(self):
         return f"{self.class_name}#{self.name}"
 
-    def find_ma(self, cas):
+    def find_fa(self, cas):
         for fa in cas[FormatClassToJava(self.class_name)].get_fields():
             if self.name == fa.name:
                 return fa
