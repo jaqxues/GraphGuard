@@ -39,6 +39,21 @@ class MethodDec:
         raise Exception(f"Unresolved MethodDec: {self.pretty_format()}")
 
 
+class FieldDec:
+    def __init__(self, class_name, name):
+        self.name = name
+        self.class_name = class_name
+
+    def pretty_format(self):
+        return f"{self.class_name}#{self.name}"
+
+    def find_ma(self, cas):
+        for fa in cas[FormatClassToJava(self.class_name)].get_fields():
+            if self.name == fa.name:
+                return fa
+        raise Exception(f"Unresolved FieldDec: {self.pretty_format()}")
+
+
 def resolve_classes(dx, c_decs):
     # Key:   TypeDescriptor Representation of class
     # Value: Androguard Class Analysis Object
@@ -48,3 +63,8 @@ def resolve_classes(dx, c_decs):
 def resolve_methods(m_decs, cas):
     # Dict MethodDec - MethodAnalysis
     return {m: m.find_ma(cas) for m in m_decs}
+
+
+def resolve_fields(f_decs, cas):
+    # Dict FieldDec - FieldAnalysis
+    return {f: f.find_fa(cas) for f in f_decs}

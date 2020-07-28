@@ -1,12 +1,14 @@
-from utils.formats import FormatClassToJava, pretty_format_ma
+from utils.formats import FormatClassToJava, pretty_format_ma, pretty_format_fa
 
 
 class Accumulator:
     def __init__(self):
         self.candidates_cs = {}
         self.candidates_ms = {}
+        self.candidates_fs = {}
         self.matching_cs = {}
         self.matching_ms = {}
+        self.matching_fs = {}
 
     def add_candidates(self, candidates_cs=None, candidates_ms=None, candidates_fs=None):
         previous_cs = len(self.matching_cs)
@@ -17,12 +19,12 @@ class Accumulator:
 
                 if len(c_set) == 1:
                     el = list(c_set)[0]
-                    print("+ Found single candidate for core Class. Considering it a match!",
+                    print("+ Found single candidate for Class. Considering it a match!",
                           f"\n\t{c_name} -> {el}")
                     self.matching_cs[c_name] = el
                     continue
 
-                print("* Found multiple candidates for core Class", c_name)
+                print("* Found multiple candidates for Class", c_name)
 
                 if c_name in self.candidates_cs:
                     previous = self.candidates_cs[c_name]
@@ -32,7 +34,7 @@ class Accumulator:
                         print("- Inner join on possible candidates resulted in no match for Class", c_name)
                     elif len(combined) == 1:
                         el = list(combined)[0]
-                        print("+ Inner join resulted in single core candidate. Considering it a match!",
+                        print("+ Inner join resulted in single candidate for Class. Considering it a match!",
                               f"\n\t{c_name} -> {el}")
                         self.matching_cs[c_name] = el
 
@@ -49,12 +51,12 @@ class Accumulator:
 
                 if len(m_set) == 1:
                     el = list(m_set)[0]
-                    print("+ Found single candidate for core Method. Considering it a match",
+                    print("+ Found single candidate for Method. Considering it a match",
                           f"\n\t{m_dec.pretty_format()} -> {pretty_format_ma(el)}")
                     self.matching_ms[m_dec] = el
                     continue
 
-                print("* Found multiple candidates for core Method", m_dec.pretty_format())
+                print("* Found multiple candidates for Method", m_dec.pretty_format())
 
                 if m_dec in self.candidates_ms:
                     previous = self.candidates_ms[m_dec]
@@ -65,16 +67,46 @@ class Accumulator:
                               m_dec.pretty_format())
                     elif len(combined) == 1:
                         el = list(combined)[0]
-                        print("+ Inner join resulted in single core candidate. Considering it a match!",
+                        print("+ Inner join resulted in single candidate for Method. Considering it a match!",
                               f"\n\t{m_dec.pretty_format()} -> {pretty_format_ma(el)}")
                         self.matching_ms[m_dec] = el
                     elif len(combined) < len(previous):
                         print(".. Inner join narrowed down search.",
-                              f"(({len(m_set) | len(previous)}) -> {len(combined)})")
+                              f"(({len(m_set)} | {len(previous)}) -> {len(combined)})")
 
                     self.candidates_ms[m_dec] = combined
                 else:
                     self.candidates_ms[m_dec] = m_set
+
+        if candidates_fs is not None:
+            for f_dec, f_set in candidates_fs.items():
+                if len(f_set) == 1:
+                    el = list(f_set)[0]
+                    print("+ Found single candidate for Field. Considering it a match",
+                          f"\n\t{f_dec.pretty_format()} -> {pretty_format_fa(el)}")
+                    self.matching_fs[f_dec] = el
+
+                print("* Found multiple candidates for Field", f_dec.pretty_format())
+
+                if f_dec in self.candidates_fs:
+                    previous = self.candidates_fs[f_dec]
+                    combined = previous & f_set
+
+                    if len(combined) == 0:
+                        print("- Inner join on possible candidates resulted in no match for Field",
+                              f_dec.pretty_format())
+                    elif len(combined) == 1:
+                        el = list(combined)[0]
+                        print("+ Inner join resulted in single candidate for Field. Considering it a match!",
+                             f"\n\t{f_dec.pretty_format()} -> {pretty_format_fa(el)}")
+                        self.matching_fs[f_dec] = el
+                    elif len(combined) < len(previous):
+                        print(".. Inner join narrowed down search",
+                              f"(({len(f_set)} | {len(previous)}) -> {len(combined)})")
+
+                    self.candidates_fs[f_dec] = combined
+                else:
+                    self.candidates_fs[f_dec] = f_set
 
         # Clear Candidates after match was found
         for m_dec in self.matching_ms.keys():
@@ -87,6 +119,10 @@ class Accumulator:
                 self.matching_cs[c_name] = c_name2
                 print("+ Matching Class of single candidate method match",
                       f"\n\t{c_name} -> {c_name2}")
+
+        for f_dec in self.matching_fs.keys():
+            if f_dec in self.candidates_fs:
+                del self.candidates_fs[f_dec]
 
         for c_name in self.matching_cs.keys():
             if c_name in self.candidates_cs:

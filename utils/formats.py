@@ -54,6 +54,10 @@ def pretty_format_ma(ma):
                            ", ".join(get_pretty_params(str(ma.descriptor))))
 
 
+def pretty_format_fa(fa):
+    return fa.class_name + "#" + fa.name
+
+
 def get_usable_description(ma):
     stripped, r = str(ma.descriptor[1:]).split(")")
     return "(" + (" ".join(map(get_usable, stripped.split(" "))) if stripped else "") + ")" + get_usable(r)
