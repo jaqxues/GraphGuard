@@ -109,7 +109,7 @@ class Accumulator:
                     self.candidates_fs[fa] = f_set
 
         # Clear Candidates after match was found
-        for ma in self.matching_ms.keys():
+        for ma in self.matching_ms:
             if ma in self.candidates_ms:
                 del self.candidates_ms[ma]
 

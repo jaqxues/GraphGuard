@@ -72,9 +72,9 @@ class StringStrategy(Strategy):
 
         return candidates_cs, candidates_ms
 
-    def compare_unique_strings(self, r_cas):
+    def compare_unique_strings(self):
         unique_strs = defaultdict(set)
-        c_names = {str(ca.name) for ca in r_cas}
+        c_names = {str(ca.name) for ca in self.r_cas}
 
         for s, xrefs in get_filtered_strs(self.dx):
             cn = list(xrefs)[0][0].name

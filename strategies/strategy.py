@@ -9,6 +9,13 @@ class Strategy:
         """
         self.dx = dx
         self.dx2 = dx2
-        self.r_cas = accumulator.get_unmatched_cs(r_cas)
-        self.r_mas = accumulator.get_unmatched_ms(r_mas)
-        self.r_fas = accumulator.get_unmatched_fs(r_fas)
+        self.r_cas = r_cas
+        self.r_mas = r_mas
+        self.r_fas = r_fas
+        self.accumulator = accumulator
+        self.update_matched()
+
+    def update_matched(self):
+        self.r_cas = self.accumulator.get_unmatched_cs(self.r_cas)
+        self.r_mas = self.accumulator.get_unmatched_ms(self.r_mas)
+        self.r_fas = self.accumulator.get_unmatched_fs(self.r_fas)

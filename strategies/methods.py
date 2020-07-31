@@ -16,7 +16,8 @@ total_score = sum((score for _, score in cfs))
 
 
 class MethodStrategy(Strategy):
-    def try_resolve_ms(self, matching_cs, exact):
+    def try_resolve_ms(self, exact):
+        matching_cs = self.accumulator.matching_cs
         c_names = {str(ca.name) for ca in self.r_cas}
         min_points = total_score if exact else MIN_MATCH_POINTS
 
