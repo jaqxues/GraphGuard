@@ -138,4 +138,4 @@ class Accumulator:
         return set(map(FormatClassToJava, c_decs)) - set(self.matching_cs.keys())
 
     def get_unmatched_fs(self, f_decs):
-        return tuple()
+        return tuple(filter(lambda x: x not in self.matching_fs, f_decs))
