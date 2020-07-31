@@ -3,7 +3,7 @@ from collections import Counter, defaultdict
 from androguard.core.analysis.analysis import FieldAnalysis, ClassAnalysis
 
 from utils.formats import get_usable, get_usable_description
-from core.strategy import Strategy
+from strategies.strategy import Strategy
 
 
 class StructureStrategy(Strategy):

@@ -2,7 +2,7 @@ from androguard.core.analysis.analysis import MethodAnalysis
 from androguard.core.bytecode import FormatClassToJava
 
 from utils.formats import get_usable_description
-from core.strategy import Strategy
+from strategies.strategy import Strategy
 
 MIN_MATCH_POINTS = 2
 

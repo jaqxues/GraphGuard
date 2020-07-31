@@ -2,7 +2,7 @@ from collections import defaultdict, Counter
 
 from androguard.core.bytecode import FormatClassToJava
 
-from core.strategy import Strategy
+from strategies.strategy import Strategy
 
 MAX_USAGE_COUNT_STR = 20
 UNIQUE_STRINGS_MAJORITY = 2 / 3
@@ -47,18 +47,19 @@ class StringStrategy(Strategy):
             if s.value not in to_find:
                 continue
 
+            for c_dec in self.c_decs:
+                c_name = FormatClassToJava(c_dec)
+                c_counter = c_strs[c_name] if c_name in c_strs else Counter()
+                if s.value in c_counter:
+                    for x in get_xrefs_if_usable(s):
+                        c_strs2[str(x[0].name)].append(s.value)
+
             for m_dec in self.m_decs:
                 m_counter = m_strs[m_dec] if m_dec in m_strs else Counter()
-
-                c_name = FormatClassToJava(m_dec.class_name)
-                c_counter = c_strs[c_name] if c_name in c_strs else Counter()
 
                 if s.value in m_counter:
                     for x in get_xrefs_if_usable(s):
                         m_strs2[x[1]].append(s.value)
-                if s.value in c_counter:
-                    for x in get_xrefs_if_usable(s):
-                        c_strs2[str(x[0].name)].append(s.value)
 
         c_strs2 = {k: Counter(v) for k, v in c_strs2.items()}
         m_strs2 = {k: Counter(v) for k, v in m_strs2.items()}
