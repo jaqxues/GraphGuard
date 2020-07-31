@@ -62,9 +62,9 @@ def resolve_classes(dx, c_decs):
 
 def resolve_methods(m_decs, cas):
     # Dict MethodDec - MethodAnalysis
-    return {m: m.find_ma(cas) for m in m_decs}
+    return tuple((m.find_ma(cas) for m in m_decs))
 
 
 def resolve_fields(f_decs, cas):
     # Dict FieldDec - FieldAnalysis
-    return {f: f.find_fa(cas) for f in f_decs}
+    return tuple((f.find_fa(cas) for f in f_decs))

@@ -1,8 +1,7 @@
 from androguard.core.analysis.analysis import MethodAnalysis
-from androguard.core.bytecode import FormatClassToJava
 
-from utils.formats import get_usable_description
 from strategies.strategy import Strategy
+from utils.formats import get_usable_description, pretty_format_ma
 
 MIN_MATCH_POINTS = 2
 
@@ -17,28 +16,28 @@ total_score = sum((score for _, score in cfs))
 
 
 class MethodStrategy(Strategy):
-    def try_resolve_ms(self, unmatched_cs, matching_cs, exact):
+    def try_resolve_ms(self, matching_cs, exact):
+        c_names = {str(ca.name) for ca in self.r_cas}
         min_points = total_score if exact else MIN_MATCH_POINTS
 
         candidates = {}
-        for m_dec in self.m_decs:
-            if FormatClassToJava(m_dec.class_name) in unmatched_cs:
-                print("Class not resolve Class for Method", m_dec.pretty_format())
+        for ma in self.r_mas:
+            if ma.class_name in c_names:
+                print("Class not resolve Class for Method", pretty_format_ma(ma))
                 continue
 
-            c_name1 = FormatClassToJava(m_dec.class_name)
+            c_name1 = str(ma.class_name)
             c_name2 = matching_cs[c_name1]
 
-            ma1 = m_dec.find_ma({c_name1: self.dx.get_class_analysis(c_name1)})
             m_match_points = {}
 
             for ma2 in self.dx2.get_class_analysis(c_name2).get_methods():
-                x = sum(((c_fun(ma1) == c_fun(ma2)) * score for c_fun, score in cfs))
+                x = sum(((c_fun(ma) == c_fun(ma2)) * score for c_fun, score in cfs))
                 if x >= min_points:
                     m_match_points[ma2] = x
 
             if m_match_points:
                 max_matches = max(map(lambda x: x[1], m_match_points.items()))
-                candidates[m_dec] = {ma for ma, score in m_match_points.items() if score == max_matches}
+                candidates[ma] = {ma for ma, score in m_match_points.items() if score == max_matches}
 
         return candidates

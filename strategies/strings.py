@@ -1,7 +1,5 @@
 from collections import defaultdict, Counter
 
-from androguard.core.bytecode import FormatClassToJava
-
 from strategies.strategy import Strategy
 
 MAX_USAGE_COUNT_STR = 20
@@ -12,26 +10,18 @@ class StringStrategy(Strategy):
     def get_counters(self):
         c_strs, m_strs = defaultdict(list), defaultdict(list)
 
+        r_cas_set = set(self.r_cas)
+        r_mas_set = set(self.r_mas)
         for s, xrefs in get_filtered_strs(self.dx):
             for x in xrefs:
                 c_ref, m_ref = x
 
-                if c_ref.name not in self.r_cas:
-                    # XReference not in a Class or method that we need to find
-                    continue
-
-                # Loop through each method and find methods in this class
-                for m_dec in self.m_decs:
-                    ma = self.r_mas[m_dec]
-                    if ma.class_name != c_ref.name:
-                        continue
-
-                    # String is used in a class we need to find
+                if c_ref.name in r_cas_set:
                     c_strs[c_ref.name].append(s.value)
 
-                    if m_ref == ma:
-                        # String is used in this method
-                        m_strs[m_dec].append(s.value)
+                # Loop through each method and find methods in this class
+                if m_ref in r_mas_set:
+                    m_strs[m_ref].append(s.value)
 
         c_strs = {str(k): Counter(v) for k, v in c_strs.items()}
         m_strs = {k: Counter(v) for k, v in m_strs.items()}
@@ -47,15 +37,14 @@ class StringStrategy(Strategy):
             if s.value not in to_find:
                 continue
 
-            for c_dec in self.c_decs:
-                c_name = FormatClassToJava(c_dec)
+            for c_name in self.r_cas:
                 c_counter = c_strs[c_name] if c_name in c_strs else Counter()
                 if s.value in c_counter:
                     for x in get_xrefs_if_usable(s):
                         c_strs2[str(x[0].name)].append(s.value)
 
-            for m_dec in self.m_decs:
-                m_counter = m_strs[m_dec] if m_dec in m_strs else Counter()
+            for ma in self.r_mas:
+                m_counter = m_strs[ma] if ma in m_strs else Counter()
 
                 if s.value in m_counter:
                     for x in get_xrefs_if_usable(s):
@@ -83,12 +72,14 @@ class StringStrategy(Strategy):
 
         return candidates_cs, candidates_ms
 
-    def compare_unique_strings(self, cs_to_find):
+    def compare_unique_strings(self, r_cas):
         unique_strs = defaultdict(set)
+        c_names = {str(ca.name) for ca in r_cas}
+
         for s, xrefs in get_filtered_strs(self.dx):
             cn = list(xrefs)[0][0].name
             if used_only_in_class(xrefs, cn):
-                if cn in cs_to_find:
+                if cn in c_names:
                     unique_strs[cn].add(s.value)
 
         all_strs = set().union(*unique_strs.values())

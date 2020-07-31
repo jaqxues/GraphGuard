@@ -7,7 +7,7 @@ from strategies.strategy import Strategy
 
 
 class StructureStrategy(Strategy):
-    def get_exact_structure_matches(self, unmatched_cs):
+    def get_exact_structure_matches(self):
         candidates = defaultdict(set)
         criteria = [
             ClassAnalysis.get_nb_methods,
@@ -15,12 +15,12 @@ class StructureStrategy(Strategy):
             lambda ca: str(get_field_counter(ca)),
             get_method_set
         ]
-        for c in unmatched_cs:
+        for ca in self.r_cas:
+            c = ca.name
             if c.startswith("Lcom/") and self.dx2.get_class_analysis(c) is not None:
                 candidates[c].add(c)
                 continue
 
-            ca = self.dx.get_class_analysis(c)
             for ca2 in self.dx2.get_classes():
                 for cr in criteria:
                     if cr(ca) != cr(ca2):
