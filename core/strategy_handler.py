@@ -12,7 +12,7 @@ class StrategyHandler:
         self.new_idx = len(self.strategies)
         self.strategies.append((flags, apply_strategy))
 
-    def invoke_strategies(self, r_cas=None, r_mas=None, r_fas=None, only_new=False):
+    def invoke_strategies(self, r_cas=tuple(), r_mas=tuple(), r_fas=tuple(), only_new=False):
         flags = 0
         if r_cas:
             flags |= FLAG_CLASS
