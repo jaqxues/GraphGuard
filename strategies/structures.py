@@ -18,7 +18,7 @@ class StructureStrategy(Strategy):
         for ca in self.r_cas:
             c = ca.name
             if c.startswith("Lcom/") and self.dx2.get_class_analysis(c) is not None:
-                candidates[c].add(c)
+                candidates[c].add(str(c))
                 continue
 
             for ca2 in self.dx2.get_classes():

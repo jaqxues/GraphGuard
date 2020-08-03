@@ -24,7 +24,7 @@ class MethodStrategy(Strategy):
         candidates = {}
         for ma in self.r_mas:
             if ma.class_name in c_names:
-                print("Class not resolve Class for Method", pretty_format_ma(ma))
+                print("Class not resolved for Method", pretty_format_ma(ma))
                 continue
 
             c_name1 = str(ma.class_name)

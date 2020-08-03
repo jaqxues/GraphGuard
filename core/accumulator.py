@@ -13,6 +13,7 @@ class Accumulator:
     def add_candidates(self, candidates_cs=None, candidates_ms=None, candidates_fs=None):
         previous_cs = len(self.matching_cs)
         previous_ms = len(self.matching_ms)
+        previous_fs = len(self.matching_fs)
 
         if candidates_cs is not None:
             for c_name, c_set in candidates_cs.items():
@@ -81,12 +82,13 @@ class Accumulator:
         if candidates_fs is not None:
             for fa, f_set in candidates_fs.items():
                 if len(f_set) == 1:
-                    el = list(f_set)[0]
+                    el = list(f_set)[0].get_field()
                     print("+ Found single candidate for Field. Considering it a match",
-                          f"\n\t{fa.pretty_format()} -> {pretty_format_fa(el)}")
+                          f"\n\t{pretty_format_fa(fa.get_field())} -> {pretty_format_fa(el)}")
                     self.matching_fs[fa] = el
+                    continue
 
-                print("* Found multiple candidates for Field", fa.pretty_format())
+                print("* Found multiple candidates for Field", pretty_format_fa(fa.get_field()))
 
                 if fa in self.candidates_fs:
                     previous = self.candidates_fs[fa]
@@ -94,11 +96,11 @@ class Accumulator:
 
                     if len(combined) == 0:
                         print("- Inner join on possible candidates resulted in no match for Field",
-                              pretty_format_ma(fa))
+                              pretty_format_fa(fa.get_field()))
                     elif len(combined) == 1:
                         el = list(combined)[0]
                         print("+ Inner join resulted in single candidate for Field. Considering it a match!",
-                             f"\n\t{pretty_format_fa(fa)} -> {pretty_format_fa(el)}")
+                              f"\n\t{pretty_format_fa(fa.get_field())} -> {pretty_format_fa(el)}")
                         self.matching_fs[fa] = el
                     elif len(combined) < len(previous):
                         print(".. Inner join narrowed down search",
@@ -128,8 +130,9 @@ class Accumulator:
             if c_name in self.candidates_cs:
                 del self.candidates_cs[c_name]
 
-        print(
-            f"Could resolve {len(self.matching_cs) - previous_cs} new Classes, {len(self.matching_ms) - previous_ms} new Methods")
+        print(f"Could resolve {len(self.matching_cs) - previous_cs} new Classes, "
+              f"{len(self.matching_ms) - previous_ms} new Methods, "
+              f"{len(self.matching_fs) - previous_fs} new Fields.")
 
     def get_unmatched_ms(self, r_mas):
         return tuple(filter(lambda x: x not in self.matching_ms, r_mas))
