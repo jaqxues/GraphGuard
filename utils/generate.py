@@ -34,7 +34,7 @@ def generate_f_decs(f_decs, r_fas, matching_fs):
     print('f_decs = (')
     for f_dec in f_decs:
         for fa in r_fas:
-            if FormatClassToJava(f_dec.class_name) == fa.get_field().get_class_name() and f_dec.name == fa.name:
+            if FormatClassToJava(f_dec.class_name) == fa.get_class_name() and f_dec.name == fa.name:
                 break
         else:
             raise Exception(f"Field {f_dec.pretty_format()} not resolved")
@@ -42,7 +42,6 @@ def generate_f_decs(f_decs, r_fas, matching_fs):
         if fa in matching_fs:
             fa = matching_fs[fa]
         else:
-            fa = fa.get_field()
             print("# No Match Found for Field ", end="")
         print(f"FieldDec('{pretty_format_class(fa.get_class_name())}', '{fa.get_name()}'),")
     print(")")

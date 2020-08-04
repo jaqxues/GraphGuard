@@ -82,13 +82,13 @@ class Accumulator:
         if candidates_fs is not None:
             for fa, f_set in candidates_fs.items():
                 if len(f_set) == 1:
-                    el = list(f_set)[0].get_field()
+                    el = list(f_set)[0]
                     print("+ Found single candidate for Field. Considering it a match",
-                          f"\n\t{pretty_format_fa(fa.get_field())} -> {pretty_format_fa(el)}")
+                          f"\n\t{pretty_format_fa(fa)} -> {pretty_format_fa(el)}")
                     self.matching_fs[fa] = el
                     continue
 
-                print("* Found multiple candidates for Field", pretty_format_fa(fa.get_field()))
+                print("* Found multiple candidates for Field", pretty_format_fa(fa))
 
                 if fa in self.candidates_fs:
                     previous = self.candidates_fs[fa]
@@ -96,11 +96,11 @@ class Accumulator:
 
                     if len(combined) == 0:
                         print("- Inner join on possible candidates resulted in no match for Field",
-                              pretty_format_fa(fa.get_field()))
+                              pretty_format_fa(fa))
                     elif len(combined) == 1:
                         el = list(combined)[0]
                         print("+ Inner join resulted in single candidate for Field. Considering it a match!",
-                              f"\n\t{pretty_format_fa(fa.get_field())} -> {pretty_format_fa(el)}")
+                              f"\n\t{pretty_format_fa(fa)} -> {pretty_format_fa(el)}")
                         self.matching_fs[fa] = el
                     elif len(combined) < len(previous):
                         print(".. Inner join narrowed down search",

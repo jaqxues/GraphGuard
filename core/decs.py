@@ -51,7 +51,7 @@ class FieldDec:
     def find_fa(self, cas):
         c = cas[FormatClassToJava(self.class_name)].get_class()
         assert type(c) == ClassDefItem, \
-            f"GraphGuard does not support finding Fields of external Classes! ({self.pretty_format()}"
+            f"GraphGuard does not support finding Fields of external Classes! ({self.pretty_format()})"
         for fa in c.get_fields():
             if self.name == fa.name:
                 return fa
@@ -69,6 +69,6 @@ def resolve_methods(m_decs, cas):
     return tuple((m.find_ma(cas) for m in m_decs))
 
 
-def resolve_fields(f_decs, cas, dx):
+def resolve_fields(f_decs, cas):
     # Dict FieldDec - FieldAnalysis
-    return tuple((dx.get_field_analysis(f.find_fa(cas)) for f in f_decs))
+    return tuple((f.find_fa(cas) for f in f_decs))
