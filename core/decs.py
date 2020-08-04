@@ -1,4 +1,5 @@
 from androguard.core.bytecode import FormatClassToJava
+from androguard.core.bytecodes.dvm import ClassDefItem
 
 from utils.formats import strip_return_descriptor, get_as_type_descriptor, get_method_repr
 
@@ -48,7 +49,10 @@ class FieldDec:
         return f"{self.class_name}#{self.name}"
 
     def find_fa(self, cas):
-        for fa in cas[FormatClassToJava(self.class_name)].get_fields():
+        c = cas[FormatClassToJava(self.class_name)].get_class()
+        assert type(c) == ClassDefItem, \
+            f"GraphGuard does not support finding Fields of external Classes! ({self.pretty_format()}"
+        for fa in c.get_fields():
             if self.name == fa.name:
                 return fa
         raise Exception(f"Unresolved FieldDec: {self.pretty_format()}")
@@ -65,6 +69,6 @@ def resolve_methods(m_decs, cas):
     return tuple((m.find_ma(cas) for m in m_decs))
 
 
-def resolve_fields(f_decs, cas):
+def resolve_fields(f_decs, cas, dx):
     # Dict FieldDec - FieldAnalysis
-    return tuple((f.find_fa(cas) for f in f_decs))
+    return tuple((dx.get_field_analysis(f.find_fa(cas)) for f in f_decs))

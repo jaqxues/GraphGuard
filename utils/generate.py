@@ -1,4 +1,4 @@
-from utils.formats import pretty_format_class, get_pretty_params, pretty_format_ma, FormatClassToJava
+from utils.formats import pretty_format_class, get_pretty_params, pretty_format_ma, FormatClassToJava, pretty_format_fa
 
 
 def generate_m_decs(m_decs, r_mas, matching_ms):
@@ -37,7 +37,7 @@ def generate_f_decs(f_decs, r_fas, matching_fs):
             if FormatClassToJava(f_dec.class_name) == fa.get_field().get_class_name() and f_dec.name == fa.name:
                 break
         else:
-            raise Exception("Field not resolved")
+            raise Exception(f"Field {f_dec.pretty_format()} not resolved")
         print(" " * 4, end="")
         if fa in matching_fs:
             fa = matching_fs[fa]
