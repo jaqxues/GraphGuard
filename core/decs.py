@@ -30,7 +30,7 @@ class MethodDec:
         return f'MethodDec({self.pretty_format()})'
 
     def equals_ma(self, ma):
-        return self.name == ma.name and (self.skip_params or
+        return FormatClassToJava(self.class_name) == ma.class_name and self.name == ma.name and (self.skip_params or
                                          self.param_types_repr() == strip_return_descriptor(str(ma.get_descriptor())))
 
     def find_ma(self, cas):
