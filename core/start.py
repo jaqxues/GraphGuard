@@ -27,11 +27,12 @@ def load_androguard(file_path, force_reload=False, write_session=True, session_f
     return a, d, dx
 
 
-def process_files(file_paths, should_multiprocess=True):
+def process_files(apk1, apk2, should_multiprocess=True):
     """
     Similar issues to load_androguard. Serialization issue prevents sending this object (multiple Gbs in RAM) through a
     multiprocessing mechanism such as Pipes (or anything build on top of it, i. e. Queues).
     """
+    file_paths = (apk1, apk2)
     if not should_multiprocess:
         s = Session()
         return tuple(map(lambda f: load_androguard(f, True, False, s=s), file_paths))
