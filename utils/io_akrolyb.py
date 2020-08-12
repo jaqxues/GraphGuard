@@ -8,7 +8,7 @@ m_dec_regex = re.compile(
     re.MULTILINE
 )
 f_dec_regex = re.compile(
-    r"// Class (.*)\s*.*val ([A-Za-z0-9_$]+) = (/\* TODO \*/ )?VariableDec<(.*)>\(\"([A-Za-z0-9._$]+)\"\)")
+    r"@FieldClass\((.*)\)\s*.*val ([A-Za-z0-9_$]+) = (/\* TODO \*/ )?VariableDec<(.*)>\(\"([A-Za-z0-9._$]+)\"\)")
 
 
 def replace_cs(c_file, accumulator):
@@ -103,11 +103,11 @@ def replace_fs(f_file, accumulator, named_f_decs):
                     break
             else:
                 print("No matching Field found for", f_dec.pretty_format())
-                cls[f_dec.class_name] = f'/* TODO */ {f_dec.class_name}'
+                cls[f'"{f_dec.class_name}"'] = f'/* TODO */ "{f_dec.class_name}"'
                 continue
             f2 = accumulator.matching_fs[f1]
             f2_names.add(f2.name)
-            cls[f_dec.class_name] = pretty_format_class(str(f2.get_class_name()))
+            cls[f'"{f_dec.class_name}"'] = f'"{pretty_format_class(str(f2.get_class_name()))}"'
         if not f2_names:
             continue
 
@@ -129,6 +129,7 @@ def replace_fs(f_file, accumulator, named_f_decs):
 
         # Replace Field Name
         dec_txt = dec_txt.replace(f'"{m.group(5)}"', f'"{str(list(f2_names)[0])}"')
+        assert dec_txt.count(f'"{m.group(5)}"') == 1, "Ambiguous String Replacement"
 
         assert f_txt.count(m.group(0)) == 1, "Ambiguous String Replacement"
         f_txt = f_txt.replace(m.group(0), dec_txt)
