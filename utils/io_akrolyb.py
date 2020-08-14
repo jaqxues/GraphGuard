@@ -61,7 +61,7 @@ def replace_ms(m_file, accumulator, named_m_decs):
             dec_txt = dec_txt.replace(m.group(5), f'"{str(m2.name)}"')
 
         # Parameters
-        if m.group(8):
+        if m.group(8) and not m_dec.skip_params:
             params = m.group(8)
             for p1, p2 in zip(get_pretty_params(str(m1.descriptor)), get_pretty_params(str(m2.descriptor))):
                 params = params.replace(f'"{p1}"', f'"{p2}"')
