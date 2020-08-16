@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from utils.formats import pretty_format_class, get_pretty_params
 
 m_dec_regex = re.compile(
-    r"val ([A-Za-z0-9_]+) = (/\* TODO \*/ )?(MethodDec|ConstructorDec)\(\s*([A-Za-z0-9_]+),\s*(\"([A-Za-z0-9_]+)\")?,*\s*(.+)\s*([^)]*)\)",
+    r"val ([A-Za-z0-9_]+) = (/\* TODO \*/ )?(MethodDec|ConstructorDec)\(\s*([A-Za-z0-9_]+),\s*(\"([A-Za-z0-9_]+)\")?,*\s*(.+)\s*(.*)\)",
     # r"val ([A-Za-z0-9_]+) = (/\* TODO \*/ )?(MethodDec|ConstructorDec)\(\s*([A-Za-z0-9_]+),\s*(\"([A-Za-z0-9_]+)\")?,*\s*(.+)\s*(.*)\s*\)",
     re.MULTILINE
 )
