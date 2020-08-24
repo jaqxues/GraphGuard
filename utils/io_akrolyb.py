@@ -129,8 +129,8 @@ def replace_fs(f_file, accumulator, named_f_decs):
         dec_txt = dec_txt.replace(m.group(1), c_group)
 
         # Replace Field Name
-        dec_txt = dec_txt.replace(f'"{m.group(5)}"', f'"{str(list(f2_names)[0])}"')
         assert dec_txt.count(f'"{m.group(5)}"') == 1, "Ambiguous String Replacement"
+        dec_txt = dec_txt.replace(f'"{m.group(5)}"', f'"{str(list(f2_names)[0])}"')
 
         assert f_txt.count(m.group(0)) == 1, "Ambiguous String Replacement"
         f_txt = f_txt.replace(m.group(0), dec_txt)
