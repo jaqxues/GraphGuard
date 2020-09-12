@@ -13,7 +13,7 @@ much more usable and interactive for the person working on it.
 # Run it
 * To run the notebook - Install Jupyter notebook (`pip install notebook`)
 * Install dependencies:
-  * Install Androguard 3.4.0 alpha1 ~~(`pip install androguard`)~~
+  * Install Androguard 3.4.0 alpha1 (`pip install androguard --pre`)
 
 * Configure it for your project:
   * Replace the `file_paths` and change them to the target APKs.
