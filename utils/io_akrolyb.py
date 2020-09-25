@@ -1,3 +1,4 @@
+import logging
 import re
 from collections.abc import Iterable
 
@@ -11,7 +12,7 @@ m_dec_regex = re.compile(
 )
 f_dec_regex = re.compile(
     r"@FieldClass\((.*)\)\s*.*val ([A-Za-z0-9_$]+) = (/\* TODO \*/ )?VariableDec<(.*)>\(\"([A-Za-z0-9._$]+)\"\)")
-
+logging.basicConfig(format='%(message)s')
 
 def replace_cs(c_file, accumulator):
     with open(c_file, "r") as f:
@@ -71,7 +72,7 @@ def replace_ms(m_file, accumulator, named_m_decs):
                     params = params.replace(f'"{p1}"', f'"{p2}"')
                 dec_txt = safe_replace(dec_txt, m.group(8), params)
         except AmbiguousStringReplacement as e:
-            print(e)
+            logging.warning(e)
             dec_txt = m.group(0).replace(m.group(3), "/* TODO: Ambiguous String Replacement */ ")
         m_txt = m_txt.replace(m.group(0), dec_txt)
 
@@ -135,7 +136,7 @@ def replace_fs(f_file, accumulator, named_f_decs):
             # Replace Field Name
             dec_txt = safe_replace(dec_txt, f'"{m.group(5)}"', f'"{str(list(f2_names)[0])}"')
         except AmbiguousStringReplacement as e:
-            print(e)
+            logging.warning(e)
             dec_txt = m.group(0).replace(m.group(3), "/* TODO: Ambiguous String Replacement */ ")
 
         f_txt = safe_replace(f_txt, m.group(0), dec_txt)
