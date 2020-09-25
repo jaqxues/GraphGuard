@@ -10,3 +10,17 @@ def flat_map(f, li):
             yield from flat_map(f, i)
         else:
             yield f(i)
+
+
+class AmbiguousStringReplacement(Exception):
+    def __init__(self, text, old):
+        self.text = text
+        self.old = old
+        self.message = f'Ambiguous String Replacement: Found {text.count(old)} occurrences of "{old}" in "{text}"'
+        super().__init__(self.message)
+
+
+def safe_replace(text, old, new):
+    if text.count(old) != 1:
+        raise AmbiguousStringReplacement(text, old)
+    return text.replace(old, new)

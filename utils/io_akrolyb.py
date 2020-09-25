@@ -2,6 +2,7 @@ import re
 from collections.abc import Iterable
 
 from utils.formats import pretty_format_class, get_pretty_params
+from utils.utils import safe_replace, AmbiguousStringReplacement
 
 m_dec_regex = re.compile(
     r"val ([A-Za-z0-9_]+) = (/\* TODO \*/ )?(MethodDec|ConstructorDec)\(\s*([A-Za-z0-9_]+),\s*(\"([A-Za-z0-9_]+)\")?,*\s*(.+)\s*([^)]*)\)",
@@ -50,25 +51,28 @@ def replace_ms(m_file, accumulator, named_m_decs):
 
         m2 = accumulator.matching_ms[m1]
 
-        dec_txt = m.group(0)
+        # Try Replacing Automatically. If ambiguous replacement, mark with _TODO_ Comment + Appropriate Message
+        try:
+            dec_txt = m.group(0)
 
-        # Remove /* _TODO_ */ Comments
-        dec_txt = dec_txt.replace(m.group(2), "")
+            # Remove /* _TODO_ */ Comments
+            dec_txt = dec_txt.replace(m.group(2), "")
 
-        # Replace Method Name
-        assert ((m.group(6) is None) and (m_dec.name == "<init>")) or (m.group(6) == m_dec.name)
-        if m.group(6):
-            assert dec_txt.count(m.group(5)) == 1, "Ambiguous String Replacement"
-            dec_txt = dec_txt.replace(m.group(5), f'"{str(m2.name)}"')
+            # Replace Method Name
+            assert ((m.group(6) is None) and (m_dec.name == "<init>")) or (m.group(6) == m_dec.name), \
+                "Broke Constructor/Method Integrity"
+            if m.group(6):
+                dec_txt = safe_replace(dec_txt, m.group(5), f'"{str(m2.name)}"')
 
-        # Parameters
-        if m.group(8) and not m_dec.skip_params:
-            params = m.group(8)
-            for p1, p2 in zip(get_pretty_params(str(m1.descriptor)), get_pretty_params(str(m2.descriptor))):
-                params = params.replace(f'"{p1}"', f'"{p2}"')
-            assert dec_txt.count(m.group(8)) == 1, "Ambiguous String Replacement"
-            dec_txt = dec_txt.replace(m.group(8), params)
-
+            # Parameters
+            if m.group(8) and not m_dec.skip_params:
+                params = m.group(8)
+                for p1, p2 in zip(get_pretty_params(str(m1.descriptor)), get_pretty_params(str(m2.descriptor))):
+                    params = params.replace(f'"{p1}"', f'"{p2}"')
+                dec_txt = safe_replace(dec_txt, m.group(8), params)
+        except AmbiguousStringReplacement as e:
+            print(e)
+            dec_txt = m.group(0).replace(m.group(3), "/* TODO: Ambiguous String Replacement */ ")
         m_txt = m_txt.replace(m.group(0), dec_txt)
 
     return m_txt
@@ -114,24 +118,25 @@ def replace_fs(f_file, accumulator, named_f_decs):
 
         assert len(f2_names) == 1, f"Field of multiple class no longer have the same name {f2_names}"
 
-        dec_txt = m.group(0)
+        # Try Replacing Automatically. If ambiguous replacement, mark with _TODO_ Comment + Appropriate Message
+        try:
+            dec_txt = m.group(0)
 
-        # Remove /* _TODO_ */ Comment
-        if m.group(3):
-            dec_txt = dec_txt.replace(m.group(3), "")
+            # Remove /* _TODO_ */ Comment
+            if m.group(3):
+                dec_txt = safe_replace(dec_txt, m.group(3), "")
 
-        # Change Classes
-        c_group = m.group(1)
-        for c1, c2 in cls.items():
-            assert c_group.count(c1) == 1, "Ambiguous String Replacement"
-            c_group = c_group.replace(c1, c2)
-        assert dec_txt.count(m.group(1)) == 1, "Ambiguous String Replacement"
-        dec_txt = dec_txt.replace(m.group(1), c_group)
+            # Change Classes
+            c_group = m.group(1)
+            for c1, c2 in cls.items():
+                c_group = safe_replace(c_group, c1, c2)
+            dec_txt = safe_replace(dec_txt, m.group(1), c_group)
 
-        # Replace Field Name
-        assert dec_txt.count(f'"{m.group(5)}"') == 1, "Ambiguous String Replacement"
-        dec_txt = dec_txt.replace(f'"{m.group(5)}"', f'"{str(list(f2_names)[0])}"')
+            # Replace Field Name
+            dec_txt = safe_replace(dec_txt, f'"{m.group(5)}"', f'"{str(list(f2_names)[0])}"')
+        except AmbiguousStringReplacement as e:
+            print(e)
+            dec_txt = m.group(0).replace(m.group(3), "/* TODO: Ambiguous String Replacement */ ")
 
-        assert f_txt.count(m.group(0)) == 1, "Ambiguous String Replacement"
-        f_txt = f_txt.replace(m.group(0), dec_txt)
+        f_txt = safe_replace(f_txt, m.group(0), dec_txt)
     return f_txt
