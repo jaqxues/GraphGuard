@@ -5,6 +5,8 @@ from collections.abc import Iterable
 from utils.formats import pretty_format_class, get_pretty_params
 from utils.utils import safe_replace, AmbiguousStringReplacement
 
+from androguard.core.bytecode import FormatClassToJava
+
 m_dec_regex = re.compile(
     r"val ([A-Za-z0-9_]+) = (/\* TODO \*/ )?(MethodDec|ConstructorDec)\(\s*([A-Za-z0-9_]+),\s*(\"([A-Za-z0-9_]+)\")?,*\s*(.+)\s*([^)]*)\)",
     # r"val ([A-Za-z0-9_]+) = (/\* TODO \*/ )?(MethodDec|ConstructorDec)\(\s*([A-Za-z0-9_]+),\s*(\"([A-Za-z0-9_]+)\")?,*\s*(.+)\s*(.*)\s*\)",
@@ -109,23 +111,26 @@ def replace_fs(f_file, accumulator, named_f_decs):
                     break
             else:
                 print("No matching Field found for", f_dec.pretty_format())
-                cls[f'"{f_dec.class_name}"'] = f'/* TODO */ "{f_dec.class_name}"'
-                continue
-            f2 = accumulator.matching_fs[f1]
-            f2_names.add(f2.name)
-            cls[f'"{f_dec.class_name}"'] = f'"{pretty_format_class(str(f2.get_class_name()))}"'
-        if not f2_names:
+                if FormatClassToJava(f_dec.class_name) in accumulator.matching_cs:
+                    cl2 = pretty_format_class(accumulator.matching_cs[FormatClassToJava(f_dec.class_name)])
+                    cls[f'"{f_dec.class_name}"'] = f'"{cl2}"'
+                    print("Only updating matched Class:", f_dec.class_name, "->", cl2)
+                    f1 = None
+                else:
+                    cls[f'"{f_dec.class_name}"'] = f'/* TODO */ "{f_dec.class_name}"'
+                    continue
+            if f1:
+                f2 = accumulator.matching_fs[f1]
+                f2_names.add(f2.name)
+                cls[f'"{f_dec.class_name}"'] = f'"{pretty_format_class(str(f2.get_class_name()))}"'
+        if not (f2_names or cls):
             continue
 
-        assert len(f2_names) == 1, f"Field of multiple class no longer have the same name {f2_names}"
+        assert len(f2_names) <= 1, f"Field of multiple class no longer have the same name {f2_names}"
 
         # Try Replacing Automatically. If ambiguous replacement, mark with _TODO_ Comment + Appropriate Message
         try:
             dec_txt = m.group(0)
-
-            # Remove /* _TODO_ */ Comment
-            if m.group(3):
-                dec_txt = safe_replace(dec_txt, m.group(3), "")
 
             # Change Classes
             c_group = m.group(1)
@@ -133,8 +138,13 @@ def replace_fs(f_file, accumulator, named_f_decs):
                 c_group = safe_replace(c_group, c1, c2)
             dec_txt = safe_replace(dec_txt, m.group(1), c_group)
 
-            # Replace Field Name
-            dec_txt = safe_replace(dec_txt, f'"{m.group(5)}"', f'"{str(list(f2_names)[0])}"')
+            if f2_names:
+                # Remove /* _TODO_ */ Comment
+                if m.group(3):
+                    dec_txt = safe_replace(dec_txt, m.group(3), "")
+
+                # Replace Field Name
+                dec_txt = safe_replace(dec_txt, f'"{m.group(5)}"', f'"{str(list(f2_names)[0])}"')
         except AmbiguousStringReplacement as e:
             logging.warning(e)
             dec_txt = m.group(0).replace(m.group(3), "/* TODO: Ambiguous String Replacement */ ")
