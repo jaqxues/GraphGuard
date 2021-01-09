@@ -16,10 +16,8 @@ f_dec_regex = re.compile(
     r"@FieldClass\((.*)\)\s*.*val ([A-Za-z0-9_$]+) = (/\* TODO \*/ )?VariableDec<(.*)>\(\"([A-Za-z0-9._$]+)\"\)")
 logging.basicConfig(format='%(message)s')
 
-def replace_cs(c_file, accumulator):
-    with open(c_file, "r") as f:
-        c_txt = f.read()
 
+def replace_cs(c_txt, accumulator):
     # Mark All items with /* _TODO_ */ Comments
     c_txt = c_txt.replace("ClassDec(", "/* TODO */ ClassDec(")
 
@@ -30,10 +28,7 @@ def replace_cs(c_file, accumulator):
     return c_txt
 
 
-def replace_ms(m_file, accumulator, named_m_decs):
-    with open(m_file, "r") as f:
-        m_txt = f.read()
-
+def replace_ms(m_txt, accumulator, named_m_decs):
     # Mark All items with /* _TODO_ */ Comments
     m_txt = re.sub(r"((MethodDec|ConstructorDec)\()", r"/* TODO */ \1", m_txt)
 
@@ -81,10 +76,7 @@ def replace_ms(m_file, accumulator, named_m_decs):
     return m_txt
 
 
-def replace_fs(f_file, accumulator, named_f_decs):
-    with open(f_file, "r") as f:
-        f_txt = f.read()
-
+def replace_fs(f_txt, accumulator, named_f_decs):
     f_txt = f_txt.replace("VariableDec<", "/* TODO */ VariableDec<")
 
     for m in f_dec_regex.finditer(f_txt):
@@ -151,3 +143,20 @@ def replace_fs(f_file, accumulator, named_f_decs):
 
         f_txt = safe_replace(f_txt, m.group(0), dec_txt)
     return f_txt
+
+
+def _read_file(x_f):
+    with open(x_f, 'r') as f:
+        return f.read()
+
+
+def replace_cs_f(c_file, accumulator):
+    return replace_cs(_read_file(c_file), accumulator)
+
+
+def replace_ms_f(m_file, accumulator, named_m_decs):
+    return replace_ms(_read_file(m_file), accumulator, named_m_decs)
+
+
+def replace_fs_f(f_file, accumulator, named_f_decs):
+    return replace_fs(f_file, accumulator, named_f_decs)
