@@ -159,4 +159,4 @@ def replace_ms_f(m_file, accumulator, named_m_decs):
 
 
 def replace_fs_f(f_file, accumulator, named_f_decs):
-    return replace_fs(f_file, accumulator, named_f_decs)
+    return replace_fs(_read_file(f_file), accumulator, named_f_decs)
